@@ -5,18 +5,17 @@ class DBClient {
     const host = process.env.DB_HOST || 'localhost';
     const port = process.env.DB_PORT || 27017;
     const database = process.env.DB_DATABASE || 'files_manager';
+
     const url = `mongodb://${host}:${port}`;
     this.client = new MongoClient(url, { useUnifiedTopology: true });
-    this.dbName = database;
 
     this.client
       .connect()
       .then(() => {
-        this.db = this.client.db(this.dbName);
-        console.log('Connected successfully to MongoDB');
+        this.db = this.client.db(`${database}`);
       })
       .catch((error) => {
-        console.error('Failed to connect to MongoDB:', error);
+        console.error(error);
       });
   }
 
@@ -25,11 +24,11 @@ class DBClient {
   }
 
   async nbUsers() {
-    await this.db.collection('users').countDocuments();
+    return this.db.collection('users').countDocuments();
   }
 
   async nbFiles() {
-    await this.db.collection('files').countDocuments();
+    return this.db.collection('files').countDocuments();
   }
 }
 
