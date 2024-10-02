@@ -97,3 +97,50 @@ export async function postUpload(req, res) {
     parentId: parentId || 0,
   });
 }
+
+export async function getShow(req, res) {
+  const user = await getUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const fileId = req.params.id;
+
+  try {
+    const file = await dbClient.db
+      .collection('files')
+      .findOne({ _id: new ObjectID(fileId), userId: user._id });
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    return res.status(200).json(file);
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export async function getIndex(req, res) {
+  const user = await getUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const parentId = parseInt(req.query.parentId, 10) || 0;
+  const page = parseInt(req.query.page, 10) || 0;
+  const pageSize = 20;
+
+  try {
+    const files = await dbClient.db
+      .collection('files')
+      .aggregate([
+        { $match: { userId: user._id, parentId } },
+        { $skip: page * pageSize },
+        { $limit: pageSize },
+      ])
+      .toArray();
+    return res.status(200).json(files);
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
