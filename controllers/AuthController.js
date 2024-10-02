@@ -40,5 +40,5 @@ export async function getDisconnect(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   await redisClient.del(key);
-  return res.status(204).json();
+  return res.status(204).send();
 }
