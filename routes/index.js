@@ -8,6 +8,7 @@ import {
   getIndex,
   putPublish,
   putUnpublish,
+  getFile,
 } from '../controllers/FilesController';
 
 const router = Router();
@@ -26,5 +27,7 @@ router.get('/files/:id', getShow);
 
 router.put('/files/:id/publish', putPublish);
 router.put('/files/:id/unpublish', putUnpublish);
+
+router.get('/files/:id/data', getFile);
 
 export default router;
